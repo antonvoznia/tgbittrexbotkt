@@ -1,5 +1,6 @@
 import com.beust.klaxon.Klaxon
 import models.Currency
+import tg.TelegramAPI
 
 class NativeLib {
     init {
@@ -29,6 +30,8 @@ fun main(args: Array<String>) {
         l.add(Klaxon().parse<Currency>(strBtc))
         l.add(Klaxon().parse<Currency>(strEth))
         l.add(Klaxon().parse<Currency>(strLtc))
+
+        println(TelegramAPI.getUpdates())
 
         val mess = createSummaryRes(l)
         println(mess)
