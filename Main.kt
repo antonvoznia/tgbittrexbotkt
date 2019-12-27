@@ -1,6 +1,5 @@
 import com.beust.klaxon.Klaxon
 import models.Currency
-import java.util.*
 
 class NativeLib {
     init {
@@ -9,26 +8,29 @@ class NativeLib {
     external fun getInfoCurr(name: String): String
 }
 
-fun createSummaryRes(btc: Currency?, eth: Currency?, ltc: Currency?): String {
+fun createSummaryRes(curr: MutableList<Currency?>): String {
+    val correctInfo: (Currency?) -> StringBuilder = {y: Currency? ->
+        StringBuilder().append(y?.symbol).append(" ").append(y?.high).append('\n')
+    }
     var mess = StringBuilder()
-    mess.append("Current prices of the crypto-currencies: \n")
-    mess.append(btc?.symbol).append(" ").append(btc?.high).append('\n')
-    mess.append(eth?.symbol).append(" ").append(eth?.high).append('\n')
-    mess.append(ltc?.symbol).append(" ").append(ltc?.high).append('\n')
+    curr.iterator().forEach { mess.append(correctInfo(it)); }
 
     return mess.toString()
 }
 
 fun main(args: Array<String>) {
+
     val initNative = NativeLib()
     while (true) {
         val strBtc = initNative.getInfoCurr("btc")
         val strEth = initNative.getInfoCurr("eth")
         val strLtc = initNative.getInfoCurr("ltc")
-        val res1 = Klaxon().parse<Currency>(strBtc)
-        val res2 = Klaxon().parse<Currency>(strEth)
-        val res3 = Klaxon().parse<Currency>(strLtc)
-        val mess = createSummaryRes(res1, res2, res3)
+        val l = mutableListOf<Currency?>()
+        l.add(Klaxon().parse<Currency>(strBtc))
+        l.add(Klaxon().parse<Currency>(strEth))
+        l.add(Klaxon().parse<Currency>(strLtc))
+
+        val mess = createSummaryRes(l)
         println(mess)
         Thread.sleep(10_000)
     }
